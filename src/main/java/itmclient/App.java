@@ -1,9 +1,12 @@
 package itmclient;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 
+import com.mondeca.api.tm.TopicMap;
 import com.mondeca.itm.schema.*;
 
 /**
@@ -19,6 +22,7 @@ public class App {
   public static final String PSI_TERM_1 = "itm:n#_108948"; // Husband
   public static final String PSI_TERM_2 = "itm:n#_108944"; // Wife
   public static final String PSI_LIST = "itm:n#_108958"; // Family
+  public static final String PSI_LIST_2 = "itm:n#_108969"; // Family-2
 
 
   public static void main(String[] args) throws Exception {
@@ -51,10 +55,30 @@ public class App {
 //    System.out.println("Term: " + topic.toString());
 
       // Get a List
-    topicRequest.setPsi(PSI_LIST);
-    topicRequest.setGetMetaData(true);
-    TopicType topic = itm.getTopic(topicRequest);
-    System.out.println("List: " + topic.toString());
+//    topicRequest.setPsi(PSI_LIST_2);
+//    topicRequest.setGetMetaData(true);
+//    TopicType listTopic = itm.getTopic(topicRequest);
+//    System.out.println("List: " + listTopic.toString());
+//
+//    List<TopicType> termTopics = new ArrayList<TopicType>();
+//    List<PointerType> pointers = listTopic.getDataItems().getPointer();
+//
+//    for(PointerType pointer : pointers) {
+//      termTopics.add(pointer.getTopic());
+//    }
+
+
+    EnquireTerms termEnquiry = new EnquireTerms();
+//    String query = termEnquiry.buildLocalTermEnquiry("108969","en");
+    String query = termEnquiry.buildTermEnquiry(PSI_LIST_2);
+    System.out.println("Query:\n" + query + "\n");
+
+    EnquireRequestType enquiry = new EnquireRequestType();
+    enquiry.setConnectionID(connectionId);
+    enquiry.setIncludeReferentialTopics(true);
+    enquiry.setQuery(query);
+    QueryResultType queryResult = itm.enquire(enquiry);
+    TopicMapType topicMap = queryResult.getTopicMap();
 
     // LOGOUT
     ConnectedRequestType logoutRequest = new ConnectedRequestType();
